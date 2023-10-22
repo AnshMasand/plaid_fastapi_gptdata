@@ -47,3 +47,15 @@ def exchange_public_token(plaid_public_token: PlaidPublicToken):
 
     return {"access_token": access_token}
 
+def get_transactions(plaid_client, access_token, start_date, end_date):
+    options = TransactionsGetRequestOptions()
+    transactions_request = TransactionsGetRequest(
+        access_token=access_token,
+        start_date=start_date,
+        end_date=end_date,
+        options=options,
+    )
+    transactions_response = plaid_client.transactions_get(transactions_request)
+    transactions = transactions_response['transactions']
+
+    return [transaction.to_dict() for transaction in transactions]

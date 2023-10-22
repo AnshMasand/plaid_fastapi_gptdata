@@ -29,3 +29,13 @@ async def exchange_token(plaid_public_token: PlaidPublicToken):
     access_token_info = crud.exchange_public_token(plaid_public_token)
     return access_token_info
 
+class TransactionRequestInfo(BaseModel):
+    bank: str
+    account: str
+    start_date: datetime.date
+    end_date: datetime.date
+
+@router.get("/plaid/fetch_transactions")
+async def fetch_transactions(access_token: str, start_date: datetime.date, end_date: datetime.date):
+    transactions = crud.get_transactions(plaid_client, access_token, start_date, end_date)
+    return transactions
