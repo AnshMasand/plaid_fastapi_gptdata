@@ -39,3 +39,8 @@ class TransactionRequestInfo(BaseModel):
 async def fetch_transactions(access_token: str, start_date: datetime.date, end_date: datetime.date):
     transactions = crud.get_transactions(plaid_client, access_token, start_date, end_date)
     return transactions
+
+@router.get("/plaid/accounts_balances")
+async def get_accounts_balances(access_token: str):
+    accounts = crud.get_accounts(plaid_client, access_token)
+    return accounts

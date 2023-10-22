@@ -59,3 +59,10 @@ def get_transactions(plaid_client, access_token, start_date, end_date):
     transactions = transactions_response['transactions']
 
     return [transaction.to_dict() for transaction in transactions]
+
+def get_accounts(plaid_client, access_token):
+    accounts_request = AccountsGetRequest(access_token=access_token)
+    accounts_response = plaid_client.accounts_get(accounts_request)
+    accounts = accounts_response['accounts']
+
+    return [account.to_dict() for account in accounts]
