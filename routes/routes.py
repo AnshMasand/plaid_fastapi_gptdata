@@ -77,3 +77,14 @@ async def get_savings_rate(year: int, month: int, access_token: str, income: flo
 
     savings_rate = ((income - expenses) / income)
     return {"savings_rate": round(savings_rate*100, 2)}
+
+@router.get("/plaid/debt_to_income")
+async def get_debt_to_income(access_token: str, monthly_income: float):
+    accounts = crud.get_accounts(plaid_client, access_token)
+    
+    debt = sum(account['balances']['current'] for account in accounts if account['type'] in ['checking', 'savings'])
+    if monthly_income == 0:
+        return {"error": "Income cannot be zero"}
+
+    debt_to_income_ratio = (debt / monthly_income)
+    return {"debt_to_income_ratio": round(debt_to_income_ratio*100, 2)}
