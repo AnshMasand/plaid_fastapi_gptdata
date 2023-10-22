@@ -63,3 +63,17 @@ async def get_monthly_cash_flow(year: int, month: int, access_token: str):
     
     cash_flow = income - expenses
     return {"cash_flow": cash_flow, "period": f"{year}-{month}"}
+
+@router.get("/plaid/savings_rate/{year}/{month}")
+async def get_savings_rate(year: int, month: int, access_token: str, income: float):
+    start_date = datetime.date(year, month, 1)
+    end_date = (start_date + datetime.timedelta(days=32)).replace(day=1) - datetime.timedelta(days=1)
+    
+    transactions = crud.get_transactions(plaid_client, access_token, start_date, end_date)
+    expenses = sum(t['amount'] for t in transactions if t['transaction_type'] == 'debit')
+
+    if income == 0:
+        return {"error": "Income cannot be zero"}
+
+    savings_rate = ((income - expenses) / income)
+    return {"savings_rate": round(savings_rate*100, 2)}
