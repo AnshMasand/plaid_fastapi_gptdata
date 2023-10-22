@@ -44,3 +44,9 @@ async def fetch_transactions(access_token: str, start_date: datetime.date, end_d
 async def get_accounts_balances(access_token: str):
     accounts = crud.get_accounts(plaid_client, access_token)
     return accounts
+
+@router.get("/plaid/net_worth")
+async def get_net_worth(access_token:str):
+    accounts = crud.get_accounts(plaid_client, access_token)
+    net_worth = sum(a['balances']['available'] for a in accounts)
+    return {"net_worth": net_worth}
