@@ -50,3 +50,16 @@ async def get_net_worth(access_token:str):
     accounts = crud.get_accounts(plaid_client, access_token)
     net_worth = sum(a['balances']['available'] for a in accounts)
     return {"net_worth": net_worth}
+
+@router.get("/plaid/cash_flow/{year}/{month}")
+async def get_monthly_cash_flow(year: int, month: int, access_token: str):
+    start_date = datetime.date(year, month, 1)
+    end_date = (start_date + datetime.timedelta(days=32)).replace(day=1) - datetime.timedelta(days=1)
+    
+    transactions = crud.get_transactions(plaid_client, access_token, start_date, end_date)
+    
+    income = sum(t['amount'] for t in transactions if t['transaction_type'] == 'credit') 
+    expenses = sum(t['amount'] for t in transactions if t['transaction_type'] == 'debit')
+    
+    cash_flow = income - expenses
+    return {"cash_flow": cash_flow, "period": f"{year}-{month}"}
